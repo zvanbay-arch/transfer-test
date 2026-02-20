@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Главная - Transfer Service{% endblock %}
+
+{% block content %}
+<div class="row align-items-center">
+    <div class="col-md-6">
+        <h1 class="display-4">Добро пожаловать в Transfer Service</h1>
+        <p class="lead">Сервис заказа трансферов по выгодным ценам</p>
+        <hr class="my-4">
+        <p>Выберите свою роль и начните пользоваться сервисом:</p>
+        <div class="d-grid gap-2 d-md-block">
+            <a href="/register?role=client" class="btn btn-primary btn-lg me-2">
+                <i class="bi bi-person"></i> Я клиент
+            </a>
+            <a href="/register?role=driver" class="btn btn-success btn-lg">
+                <i class="bi bi-truck"></i> Я водитель
+            </a>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <img src="https://via.placeholder.com/500x400" alt="Transfer Service" class="img-fluid">
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="bi bi-clock-history display-1 text-primary"></i>
+                <h5 class="card-title mt-3">Быстрое оформление</h5>
+                <p class="card-text">Создайте заказ за пару минут и укажите свою цену</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="bi bi-shield-check display-1 text-primary"></i>
+                <h5 class="card-title mt-3">Безопасность</h5>
+                <p class="card-text">Все водители проходят проверку документов</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="bi bi-people display-1 text-primary"></i>
+                <h5 class="card-title mt-3">Надежные водители</h5>
+                <p class="card-text">Только проверенные водители с опытом работы</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

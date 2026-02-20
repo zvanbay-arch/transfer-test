@@ -1,0 +1,437 @@
+{% extends "base.html" %}
+
+{% block title %}Панель администратора - Transfer Service{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-2">
+        <div class="list-group">
+            <a href="#" class="list-group-item list-group-item-action active" data-section="dashboard">
+                <i class="bi bi-speedometer2"></i> Дашборд
+            </a>
+            <a href="#" class="list-group-item list-group-item-action" data-section="pending-drivers">
+                <i class="bi bi-person-check"></i> Ожидают проверки
+            </a>
+            <a href="#" class="list-group-item list-group-item-action" data-section="users">
+                <i class="bi bi-people"></i> Пользователи
+            </a>
+            <a href="#" class="list-group-item list-group-item-action" data-section="orders">
+                <i class="bi bi-truck"></i> Заказы
+            </a>
+            <a href="#" class="list-group-item list-group-item-action" data-section="statistics">
+                <i class="bi bi-graph-up"></i> Статистика
+            </a>
+        </div>
+    </div>
+    <div class="col-md-10">
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="section">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Главная панель</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row" id="dashboardStats">
+                        <div class="col-md-3 mb-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h3 id="totalUsers">0</h3>
+                                    <p class="text-muted">Всего пользователей</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h3 id="totalClients">0</h3>
+                                    <p class="text-muted">Клиентов</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h3 id="totalDrivers">0</h3>
+                                    <p class="text-muted">Водителей</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h3 id="pendingDrivers">0</h3>
+                                    <p class="text-muted">Ожидают проверки</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h3 id="totalOrders">0</h3>
+                                    <p class="text-muted">Всего заказов</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h3 id="pendingOrders">0</h3>
+                                    <p class="text-muted">Ожидают выполнения</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h3 id="completedOrders">0</h3>
+                                    <p class="text-muted">Выполнено</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h3 id="totalRevenue">0 ₽</h3>
+                                    <p class="text-muted">Общая выручка</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Drivers Section -->
+        <div id="pending-drivers" class="section" style="display: none;">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Водители, ожидающие проверки</h5>
+                </div>
+                <div class="card-body">
+                    <div id="pendingDriversList">
+                        <p class="text-muted">Загрузка...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Section -->
+        <div id="users" class="section" style="display: none;">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Все пользователи</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <select id="userRoleFilter" class="form-select w-25">
+                            <option value="">Все роли</option>
+                            <option value="client">Клиенты</option>
+                            <option value="driver">Водители</option>
+                            <option value="admin">Администраторы</option>
+                        </select>
+                    </div>
+                    <div id="usersList">
+                        <p class="text-muted">Загрузка...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Section -->
+        <div id="orders" class="section" style="display: none;">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Все заказы</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <select id="orderStatusFilter" class="form-select">
+                                <option value="">Все статусы</option>
+                                <option value="pending">Ожидание</option>
+                                <option value="accepted">Принят</option>
+                                <option value="completed">Выполнен</option>
+                                <option value="cancelled">Отменен</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="date" id="startDate" class="form-control" placeholder="Дата с">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="date" id="endDate" class="form-control" placeholder="Дата по">
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-primary" onclick="loadOrders()">Применить</button>
+                        </div>
+                    </div>
+                    <div id="ordersList">
+                        <p class="text-muted">Загрузка...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Section -->
+        <div id="statistics" class="section" style="display: none;">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Детальная статистика</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <select id="periodSelect" class="form-select w-25">
+                            <option value="day">За день</option>
+                            <option value="week">За неделю</option>
+                            <option value="month">За месяц</option>
+                            <option value="year">За год</option>
+                        </select>
+                    </div>
+                    <div id="detailedStats">
+                        <p class="text-muted">Выберите период</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Section navigation
+    const sections = document.querySelectorAll('.section');
+    const navLinks = document.querySelectorAll('.list-group-item');
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const sectionId = this.dataset.section;
+
+            sections.forEach(section => {
+                section.style.display = 'none';
+            });
+
+            document.getElementById(sectionId).style.display = 'block';
+
+            navLinks.forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
+
+            // Load data
+            if (sectionId === 'dashboard') loadDashboard();
+            if (sectionId === 'pending-drivers') loadPendingDrivers();
+            if (sectionId === 'users') loadUsers();
+            if (sectionId === 'orders') loadOrders();
+            if (sectionId === 'statistics') loadStatistics('month');
+        });
+    });
+
+    // Filter change handlers
+    document.getElementById('userRoleFilter').addEventListener('change', loadUsers);
+    document.getElementById('periodSelect').addEventListener('change', function() {
+        loadStatistics(this.value);
+    });
+
+    // Load dashboard
+    async function loadDashboard() {
+        const response = await fetch('/api/admin/dashboard');
+        const data = await response.json();
+
+        document.getElementById('totalUsers').textContent = data.stats.total_users;
+        document.getElementById('totalClients').textContent = data.stats.total_clients;
+        document.getElementById('totalDrivers').textContent = data.stats.total_drivers;
+        document.getElementById('pendingDrivers').textContent = data.stats.pending_drivers;
+        document.getElementById('totalOrders').textContent = data.stats.total_orders;
+        document.getElementById('pendingOrders').textContent = data.stats.pending_orders;
+        document.getElementById('completedOrders').textContent = data.stats.completed_orders;
+        document.getElementById('totalRevenue').textContent = data.stats.total_revenue + ' ₽';
+    }
+
+    // Load pending drivers
+    async function loadPendingDrivers() {
+        const response = await fetch('/api/admin/drivers/pending');
+        const drivers = await response.json();
+
+        const container = document.getElementById('pendingDriversList');
+        if (drivers.length === 0) {
+            container.innerHTML = '<p class="text-muted">Нет водителей, ожидающих проверки</p>';
+            return;
+        }
+
+        let html = '';
+        drivers.forEach(driver => {
+            html += `
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h6>${driver.user.full_name} (${driver.user.email})</h6>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Загруженные документы:</strong></p>
+                        <div class="row">
+                            ${driver.documents.map(doc => `
+                                <div class="col-md-3 mb-2">
+                                    <img src="/static/${doc.file_path}" class="img-thumbnail" alt="${doc.document_type}">
+                                    <p class="small text-center">${doc.document_type} ${doc.side || ''}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="mt-3">
+                            <button class="btn btn-success" onclick="approveDriver(${driver.user.id})">Одобрить</button>
+                            <button class="btn btn-danger" onclick="rejectDriver(${driver.user.id})">Отклонить</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+    }
+
+    // Load users
+    async function loadUsers() {
+        const role = document.getElementById('userRoleFilter').value;
+        const url = role ? `/api/admin/users?role=${role}` : '/api/admin/users';
+
+        const response = await fetch(url);
+        const users = await response.json();
+
+        const container = document.getElementById('usersList');
+        if (users.length === 0) {
+            container.innerHTML = '<p class="text-muted">Нет пользователей</p>';
+            return;
+        }
+
+        let html = '<table class="table"><thead><tr><th>ID</th><th>Email</th><th>Имя</th><th>Роль</th><th>Дата регистрации</th><th>Статус</th></tr></thead><tbody>';
+        users.forEach(user => {
+            html += `
+                <tr>
+                    <td>${user.id}</td>
+                    <td>${user.email}</td>
+                    <td>${user.full_name}</td>
+                    <td>${user.role}</td>
+                    <td>${new Date(user.created_at).toLocaleDateString()}</td>
+                    <td>${user.is_active ? 'Активен' : 'Заблокирован'}</td>
+                </tr>
+            `;
+        });
+        html += '</tbody></table>';
+        container.innerHTML = html;
+    }
+
+    // Load orders
+    window.loadOrders = async function() {
+        const status = document.getElementById('orderStatusFilter').value;
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+
+        let url = '/api/admin/orders/all?';
+        if (status) url += `status=${status}&`;
+        if (startDate) url += `start_date=${startDate}&`;
+        if (endDate) url += `end_date=${endDate}`;
+
+        const response = await fetch(url);
+        const orders = await response.json();
+
+        const container = document.getElementById('ordersList');
+        if (orders.length === 0) {
+            container.innerHTML = '<p class="text-muted">Нет заказов</p>';
+            return;
+        }
+
+        let html = '<table class="table"><thead><tr><th>ID</th><th>Клиент</th><th>Водитель</th><th>Маршрут</th><th>Цена</th><th>Статус</th><th>Дата</th></tr></thead><tbody>';
+        orders.forEach(item => {
+            html += `
+                <tr>
+                    <td>${item.order.id}</td>
+                    <td>${item.client.full_name}</td>
+                    <td>${item.driver ? item.driver.full_name : 'Не назначен'}</td>
+                    <td>${item.order.pickup_location} → ${item.order.dropoff_location}</td>
+                    <td>${item.order.client_price} ₽</td>
+                    <td>${item.order.status}</td>
+                    <td>${new Date(item.order.created_at).toLocaleString()}</td>
+                </tr>
+            `;
+        });
+        html += '</tbody></table>';
+        container.innerHTML = html;
+    }
+
+    // Load statistics
+    async function loadStatistics(period) {
+        const response = await fetch(`/api/admin/statistics/full?period=${period}`);
+        const stats = await response.json();
+
+        const container = document.getElementById('detailedStats');
+        container.innerHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6>Пользователи</h6>
+                            <p>Новых пользователей: ${stats.new_users}</p>
+                            <p>Новых клиентов: ${stats.new_clients}</p>
+                            <p>Новых водителей: ${stats.new_drivers}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6>Заказы</h6>
+                            <p>Всего: ${stats.orders.total}</p>
+                            <p>Выполнено: ${stats.orders.completed}</p>
+                            <p>Отменено: ${stats.orders.cancelled}</p>
+                            <p>В ожидании: ${stats.orders.pending}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mt-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6>Финансы</h6>
+                            <p>Выручка: ${stats.revenue} ₽</p>
+                            <p>Средний чек: ${stats.average_order_value.toFixed(2)} ₽</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+});
+
+// Approve driver
+async function approveDriver(driverId) {
+    const response = await fetch(`/api/admin/drivers/${driverId}/approve`, {
+        method: 'POST'
+    });
+
+    if (response.ok) {
+        alert('Водитель одобрен');
+        loadPendingDrivers();
+        loadDashboard();
+    } else {
+        alert('Ошибка при одобрении');
+    }
+}
+
+// Reject driver
+async function rejectDriver(driverId) {
+    const reason = prompt('Укажите причину отклонения:');
+    if (!reason) return;
+
+    const formData = new FormData();
+    formData.append('reason', reason);
+
+    const response = await fetch(`/api/admin/drivers/${driverId}/reject`, {
+        method: 'POST',
+        body: formData
+    });
+
+    if (response.ok) {
+        alert('Водитель отклонен');
+        loadPendingDrivers();
+        loadDashboard();
+    } else {
+        alert('Ошибка при отклонении');
+    }
+}
+</script>
+{% endblock %}

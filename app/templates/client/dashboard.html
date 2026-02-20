@@ -1,0 +1,244 @@
+{% extends "base.html" %}
+
+{% block title %}Панель клиента - Transfer Service{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-3">
+        <div class="list-group">
+            <a href="#" class="list-group-item list-group-item-action active" data-section="create-order">
+                <i class="bi bi-plus-circle"></i> Создать заказ
+            </a>
+            <a href="#" class="list-group-item list-group-item-action" data-section="my-orders">
+                <i class="bi bi-list"></i> Мои заказы
+            </a>
+            <a href="#" class="list-group-item list-group-item-action" data-section="stats">
+                <i class="bi bi-graph-up"></i> Статистика
+            </a>
+            <a href="#" class="list-group-item list-group-item-action" data-section="profile">
+                <i class="bi bi-person"></i> Профиль
+            </a>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <!-- Create Order Section -->
+        <div id="create-order" class="section">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Создание нового заказа</h5>
+                </div>
+                <div class="card-body">
+                    <form id="createOrderForm">
+                        <div class="mb-3">
+                            <label for="pickup_location" class="form-label">Место посадки</label>
+                            <input type="text" class="form-control" id="pickup_location" name="pickup_location" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="dropoff_location" class="form-label">Место назначения</label>
+                            <input type="text" class="form-control" id="dropoff_location" name="dropoff_location" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="pickup_time" class="form-label">Время посадки</label>
+                            <input type="datetime-local" class="form-control" id="pickup_time" name="pickup_time" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="passengers_count" class="form-label">Количество пассажиров</label>
+                                <input type="number" class="form-control" id="passengers_count" name="passengers_count" min="1" max="8" value="1" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="luggage_count" class="form-label">Количество багажа</label>
+                                <input type="number" class="form-control" id="luggage_count" name="luggage_count" min="0" value="0" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="client_price" class="form-label">Ваша цена (₽)</label>
+                            <input type="number" class="form-control" id="client_price" name="client_price" min="100" step="100" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Создать заказ</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Orders Section -->
+        <div id="my-orders" class="section" style="display: none;">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Мои заказы</h5>
+                </div>
+                <div class="card-body">
+                    <div id="ordersList">
+                        <p class="text-muted">Загрузка...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div id="stats" class="section" style="display: none;">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Моя статистика</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row" id="statsContent">
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h3 id="totalOrders">0</h3>
+                                    <p class="text-muted">Всего заказов</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h3 id="completedOrders">0</h3>
+                                    <p class="text-muted">Выполнено</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h3 id="pendingOrders">0</h3>
+                                    <p class="text-muted">В ожидании</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h3 id="totalSpent">0 ₽</h3>
+                                    <p class="text-muted">Потрачено</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Section -->
+        <div id="profile" class="section" style="display: none;">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Мой профиль</h5>
+                </div>
+                <div class="card-body">
+                    <div id="profileInfo">
+                        <p><strong>Email:</strong> <span id="profileEmail"></span></p>
+                        <p><strong>Имя:</strong> <span id="profileName"></span></p>
+                        <p><strong>Дата регистрации:</strong> <span id="profileDate"></span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Section navigation
+    const sections = document.querySelectorAll('.section');
+    const navLinks = document.querySelectorAll('.list-group-item');
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const sectionId = this.dataset.section;
+
+            // Hide all sections
+            sections.forEach(section => {
+                section.style.display = 'none';
+            });
+
+            // Show selected section
+            document.getElementById(sectionId).style.display = 'block';
+
+            // Update active state
+            navLinks.forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
+
+            // Load data if needed
+            if (sectionId === 'my-orders') loadOrders();
+            if (sectionId === 'stats') loadStats();
+            if (sectionId === 'profile') loadProfile();
+        });
+    });
+
+    // Create order form
+    document.getElementById('createOrderForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const response = await fetch('/api/clients/orders/create', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (response.ok) {
+            alert('Заказ успешно создан!');
+            this.reset();
+        } else {
+            alert('Ошибка при создании заказа');
+        }
+    });
+
+    // Load functions
+    async function loadOrders() {
+        const response = await fetch('/api/clients/orders');
+        const orders = await response.json();
+
+        const ordersList = document.getElementById('ordersList');
+        if (orders.length === 0) {
+            ordersList.innerHTML = '<p class="text-muted">У вас пока нет заказов</p>';
+            return;
+        }
+
+        let html = '<div class="list-group">';
+        orders.forEach(order => {
+            const statusClass = {
+                'pending': 'warning',
+                'accepted': 'info',
+                'completed': 'success',
+                'cancelled': 'danger'
+            }[order.status] || 'secondary';
+
+            html += `
+                <div class="list-group-item">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1">${order.pickup_location} → ${order.dropoff_location}</h6>
+                        <small class="text-${statusClass}">${order.status}</small>
+                    </div>
+                    <p class="mb-1">Цена: ${order.client_price} ₽</p>
+                    <small>${new Date(order.pickup_time).toLocaleString()}</small>
+                </div>
+            `;
+        });
+        html += '</div>';
+        ordersList.innerHTML = html;
+    }
+
+    async function loadStats() {
+        const response = await fetch('/api/clients/stats');
+        const stats = await response.json();
+
+        document.getElementById('totalOrders').textContent = stats.total_orders;
+        document.getElementById('completedOrders').textContent = stats.completed_orders;
+        document.getElementById('pendingOrders').textContent = stats.pending_orders;
+        document.getElementById('totalSpent').textContent = stats.total_spent + ' ₽';
+    }
+
+    async function loadProfile() {
+        const response = await fetch('/api/clients/profile');
+        const profile = await response.json();
+
+        document.getElementById('profileEmail').textContent = profile.email;
+        document.getElementById('profileName').textContent = profile.full_name;
+        document.getElementById('profileDate').textContent = new Date(profile.created_at).toLocaleDateString();
+    }
+});
+</script>
+{% endblock %}

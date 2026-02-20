@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Загрузка документов - Transfer Service{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Загрузка документов для верификации</h4>
+            </div>
+            <div class="card-body">
+                <form id="uploadDocumentsForm" enctype="multipart/form-data">
+                    <h5 class="mb-3">Фотографии автомобиля</h5>
+                    <div class="mb-3">
+                        <label for="car_photos" class="form-label">Загрузите 4 фотографии автомобиля (спереди, сзади, сбоку, салон)</label>
+                        <input type="file" class="form-control" id="car_photos" name="car_photos" accept="image/*" multiple required>
+                        <small class="text-muted">Выберите 4 фотографии</small>
+                    </div>
+
+                    <h5 class="mb-3 mt-4">Технический паспорт</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="tech_passport_front" class="form-label">Лицевая сторона</label>
+                            <input type="file" class="form-control" id="tech_passport_front" name="tech_passport_front" accept="image/*" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="tech_passport_back" class="form-label">Обратная сторона</label>
+                            <input type="file" class="form-control" id="tech_passport_back" name="tech_passport_back" accept="image/*" required>
+                        </div>
+                    </div>
+
+                    <h5 class="mb-3 mt-4">Водительское удостоверение</h5>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="license_front" class="form-label">Лицевая сторона</label>
+                            <input type="file" class="form-control" id="license_front" name="license_front" accept="image/*" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="license_back" class="form-label">Обратная сторона</label>
+                            <input type="file" class="form-control" id="license_back" name="license_back" accept="image/*" required>
+                        </div>
+                    </div>
+
+                    <h5 class="mb-3 mt-4">Фотография с документом</h5>
+                    <div class="mb-3">
+                        <label for="selfie" class="form-label">Ваше фото с водительским удостоверением</label>
+                        <input type="file" class="form-control" id="selfie" name="selfie" accept="image/*" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 mt-3">Загрузить документы</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('uploadDocumentsForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+
+    // Check if exactly 4 car photos
+    const carPhotos = document.getElementById('car_photos').files;
+    if (carPhotos.length !== 4) {
+        alert('Пожалуйста, выберите ровно 4 фотографии автомобиля');
+        return;
+    }
+
+    const response = await fetch('/api/drivers/documents/upload', {
+        method: 'POST',
+        body: formData
+    });
+
+    if (response.ok) {
+        alert('Документы успешно загружены! Ожидайте проверки администратором.');
+        window.location.href = '/driver/dashboard';
+    } else {
+        const error = await response.json();
+        alert('Ошибка при загрузке документов: ' + (error.detail || 'Неизвестная ошибка'));
+    }
+});
+</script>
+{% endblock %}
