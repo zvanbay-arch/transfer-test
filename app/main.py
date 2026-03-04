@@ -29,11 +29,6 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 templates = Jinja2Templates(directory="app/templates")
 
 # Include routers
-app.include_router(auth_router.router, prefix="/api/auth", tags=["authentication"])
-app.include_router(clients.router, prefix="/api/clients", tags=["clients"])
-app.include_router(drivers.router, prefix="/api/drivers", tags=["drivers"])
-app.include_router(admin.router, prefix="/api/admin", tags=["admin"])
-app.include_router(orders.router, prefix="/api/orders", tags=["orders"])
 
 # Web routes
 @app.get("/")
@@ -96,4 +91,5 @@ def create_admin_user():
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
